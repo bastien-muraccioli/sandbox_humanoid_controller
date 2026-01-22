@@ -53,6 +53,6 @@ jvrc1:
 states: {}
 # Transitions map
 transitions:
-- [NewFSMController_Initial, OK, NewFSMController_Initial, Strict]
+- [SandBoxHumanoidController_Initial, OK, SandBoxHumanoidController_Initial, Strict]
 # Initial state
-init: NewFSMController_Initial
+init: SandBoxHumanoidController_Initial

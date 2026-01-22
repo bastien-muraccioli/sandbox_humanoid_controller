@@ -4,9 +4,9 @@
 
 #include "api.h"
 
-struct NewFSMController_DLLAPI NewFSMController : public mc_control::fsm::Controller
+struct SandBoxHumanoidController_DLLAPI SandBoxHumanoidController : public mc_control::fsm::Controller
 {
-  NewFSMController(mc_rbdyn::RobotModulePtr rm, double dt, const mc_rtc::Configuration & config);
+  SandBoxHumanoidController(mc_rbdyn::RobotModulePtr rm, double dt, const mc_rtc::Configuration & config);
 
   bool run() override;
 
