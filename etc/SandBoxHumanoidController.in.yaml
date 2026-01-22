@@ -20,35 +20,35 @@ VerboseStateFactory: false
 robots:
   ground:
     module: env/ground
-# General constraints, always on
-constraints:
-- type: contact
-- type: dynamics
-  damper: [0.1, 0.01, 0.5]
-- type: compoundJoint
+
 # Collision constraint
 collisions:
 - type: collision
   useMinimal: true
-# Initial set of contacts
-contacts:
-- r1: jvrc1
-  r2: ground
-  r1Surface: LeftFoot
-  r2Surface: AllGround
-- r1: jvrc1
-  r2: ground
-  r1Surface: RightFoot
-  r2Surface: AllGround
 
-# Some options for a specific robot
-jvrc1:
-  posture:
-    stiffness: 1
-    weight: 10
-  ff:
-    stiffness: 2
-    weight: 100
+ObserverPipelines:
+  name: MainPipeline
+  gui: true
+  log: true
+
+  observers:
+    - type: Encoder
+      config:
+          velocity: encoderVelocities
+
+    - type: Tilt
+      required: true
+      update: true
+      config:
+        anchorFrameFunction: anchorFrameFunction
+        filterGains:
+          initAlpha: 2 # 5 # 0.0
+          initBeta: 2 # 1 # 0.0 # 0.00001
+          initGamma: 1 # 2 # 0.0
+          finalAlpha: 2 # 5 # 0.0
+          finalBeta: 2 # 1 # 0.0 # 0.00001
+          finalGamma: 1 # 2 # 0.0
+
 # Implement some additional text states
 states: {}
 # Transitions map
@@ -56,3 +56,44 @@ transitions:
 - [SandBoxHumanoidController_Initial, OK, SandBoxHumanoidController_Initial, Strict]
 # Initial state
 init: SandBoxHumanoidController_Initial
+
+kp:
+    left_hip_yaw_joint: 1500.0
+    left_hip_roll_joint: 1500.0
+    left_hip_pitch_joint: 1500.0
+    left_knee_joint: 1500.0
+    left_ankle_joint: 1500.0
+    right_hip_yaw_joint: 1500.0
+    right_hip_roll_joint: 1500.0
+    right_hip_pitch_joint: 1500.0
+    right_knee_joint: 1500.0
+    right_ankle_joint: 1500.0
+    torso_joint: 200.0
+    left_shoulder_pitch_joint: 200.0
+    left_shoulder_roll_joint: 100.0
+    left_shoulder_yaw_joint: 100.0
+    left_elbow_joint: 200.0
+    right_shoulder_pitch_joint: 200.0
+    right_shoulder_roll_joint: 100.0
+    right_shoulder_yaw_joint: 100.0
+    right_elbow_joint: 200.0
+kd:
+    left_hip_yaw_joint: 25.0
+    left_hip_roll_joint: 25.0
+    left_hip_pitch_joint: 25.0
+    left_knee_joint: 25.0
+    left_ankle_joint: 25.0
+    right_hip_yaw_joint: 25.0
+    right_hip_roll_joint: 25.0
+    right_hip_pitch_joint: 25.0
+    right_knee_joint: 25.0
+    right_ankle_joint: 25.0
+    torso_joint: 6.0
+    left_shoulder_pitch_joint: 2.0
+    left_shoulder_roll_joint: 2.0
+    left_shoulder_yaw_joint: 2.0
+    left_elbow_joint: 2.0
+    right_shoulder_pitch_joint: 2.0
+    right_shoulder_roll_joint: 2.0
+    right_shoulder_yaw_joint: 2.0
+    right_elbow_joint: 2.0

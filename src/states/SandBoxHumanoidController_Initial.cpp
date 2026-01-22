@@ -7,18 +7,24 @@ void SandBoxHumanoidController_Initial::configure(const mc_rtc::Configuration & 
 void SandBoxHumanoidController_Initial::start(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
+  ctl.tasksComputation(ctl.q_zero_vector);
+  ctl.torqueTask->target(ctl.torqueTarget);
+  ctl.solver().addTask(ctl.torqueTask);
 }
 
 bool SandBoxHumanoidController_Initial::run(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
-  output("OK");
-  return true;
+  // output("OK");
+   ctl.tasksComputation(ctl.q_zero_vector);
+  ctl.torqueTask->target(ctl.torqueTarget);
+  return false;
 }
 
 void SandBoxHumanoidController_Initial::teardown(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
+  ctl.solver().removeTask(ctl.torqueTask);
 }
 
 EXPORT_SINGLE_STATE("SandBoxHumanoidController_Initial", SandBoxHumanoidController_Initial)
