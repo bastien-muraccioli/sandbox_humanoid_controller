@@ -28,6 +28,17 @@ struct SandBoxHumanoidController_DLLAPI SandBoxHumanoidController : public mc_co
   Eigen::VectorXd kp_vector;
   Eigen::VectorXd kd_vector;
 
+  double kp_legs = 1500.0;
+  double kd_legs = 25.0;
+  double kp_arms = 200.0;
+  double kd_arms = 2.0;
+  double kp_torso = 200.0;
+  double kd_torso = 6.0;
+  double kp_ankles = 1500.0;
+  double kd_ankles = 25.0;
+
+  double gainsPercent = 0.1;
+
 private:
   mc_rtc::Configuration config_;
 };

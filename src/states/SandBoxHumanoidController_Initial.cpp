@@ -7,6 +7,10 @@ void SandBoxHumanoidController_Initial::configure(const mc_rtc::Configuration & 
 void SandBoxHumanoidController_Initial::start(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
+  // Enable feedback from external forces estimator
+  if (!ctl.datastore().call<bool>("EF_Estimator::isActive")) {
+    ctl.datastore().call("EF_Estimator::toggleActive");
+  }
   ctl.tasksComputation(ctl.q_zero_vector);
   ctl.torqueTask->target(ctl.torqueTarget);
   ctl.solver().addTask(ctl.torqueTask);

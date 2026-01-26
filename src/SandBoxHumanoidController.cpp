@@ -1,4 +1,6 @@
 #include "SandBoxHumanoidController.h"
+#include <mc_rtc/gui/ArrayLabel.h>
+#include <mc_rtc/gui/NumberSlider.h>
 #include <Eigen/src/Core/Matrix.h>
 
 SandBoxHumanoidController::SandBoxHumanoidController(mc_rbdyn::RobotModulePtr rm, double dt, const mc_rtc::Configuration & config)
@@ -22,6 +24,12 @@ SandBoxHumanoidController::SandBoxHumanoidController(mc_rbdyn::RobotModulePtr rm
   std::map<std::string, double> kp = config("kp");
   std::map<std::string, double> kd = config("kd");
 
+  gainsPercent = config("gainsPercentage", 0.1);
+
+  kp_vector = Eigen::VectorXd::Zero(robot().mb().nrDof() - 6);
+  kd_vector = Eigen::VectorXd::Zero(robot().mb().nrDof() - 6);
+  q_zero_vector = Eigen::VectorXd::Zero(robot().mb().nrDof() - 6);
+
   for (const auto &j : robot().mb().joints()) 
   {
     const std::string &joint_name = j.name();
@@ -34,7 +42,7 @@ SandBoxHumanoidController::SandBoxHumanoidController(mc_rbdyn::RobotModulePtr rm
         kd_vector[i] = kd.at(joint_name);
         q_zero_vector[i] = t[0];
         torqueTarget[joint_name] = {0.0};
-        mc_rtc::log::info("[RLController] Joint {}: currentTargetPosition {}, kp {}, kd {}", joint_name, q_zero_vector[i], kp_vector[i], kd_vector[i]);
+        mc_rtc::log::info("[SandBoxHumanoidController] Joint {}: currentTargetPosition {}, kp {}, kd {}", joint_name, q_zero_vector[i], kp_vector[i], kd_vector[i]);
         i++;
       }
     }
@@ -48,7 +56,7 @@ SandBoxHumanoidController::SandBoxHumanoidController(mc_rbdyn::RobotModulePtr rm
   datastore().make<std::string>("ControlMode", "Torque");
   addGui();
 
-  mc_rtc::log::success("SandBoxHumanoidController init done.");
+  mc_rtc::log::success("[SandBoxHumanoidController] init done.");
 }
 
 bool SandBoxHumanoidController::run()
@@ -73,7 +81,7 @@ void SandBoxHumanoidController::tasksComputation(Eigen::VectorXd & currentTarget
   Eigen::VectorXd currentVel = Eigen::VectorXd::Map(vel.data(), vel.size());
   auto tau = real_robot.jointTorques();
 
-  Eigen::VectorXd tau_d = (kp_vector).cwiseProduct(currentTargetPosition - currentPos) - (kd_vector).cwiseProduct(currentVel);
+  Eigen::VectorXd tau_d = (kp_vector*gainsPercent).cwiseProduct(currentTargetPosition - currentPos) - (kd_vector*gainsPercent).cwiseProduct(currentVel);
    
   size_t i = 0;
   for (const auto &joint_name : jointNames)
@@ -113,65 +121,97 @@ std::pair<sva::PTransformd, Eigen::Vector3d> SandBoxHumanoidController::createCo
 
 void SandBoxHumanoidController::addGui(void)
 {
+
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kp legs", [this]() { return kp_vector; },
+    mc_rtc::gui::ArrayLabel("kp vector", [this]() { return kp_vector; })
+  );
+
+  gui()->addElement({"SandBoxHumanoidController", "Gains"},
+    mc_rtc::gui::ArrayLabel("kd vector", [this]() { return kd_vector; })
+  );
+
+  gui()->addElement({"SandBoxHumanoidController", "Gains"},
+    mc_rtc::gui::NumberSlider("gains percent", [this]() { return gainsPercent; },
+    [this](double v) { 
+      gainsPercent = v;
+    }, 0.01, 1.0)
+  );
+
+  // gui()->addElement({"SandBoxHumanoidController", "Gains"},
+  //   mc_rtc::gui::ArrayLabel("kd vector*gainsPercent", [this]() { return kd_vector*gainsPercent; })
+  // );
+
+  // gui()->addElement({"SandBoxHumanoidController", "Gains"},
+  //   mc_rtc::gui::ArrayLabel("kp vector*gainsPercent", [this]() { return kp_vector*gainsPercent; })
+  // );
+
+  gui()->addElement({"SandBoxHumanoidController", "Gains"},
+    mc_rtc::gui::NumberInput("kp legs", [this]() { return kp_legs; },
       [this](double v) { 
-        kp_vector.segment(0, 4).setConstant(v); 
-        kp_vector.segment(5, 4).setConstant(v); 
+        kp_legs = v;
+        kp_vector.segment(0, 4).setConstant(kp_legs); 
+        kp_vector.segment(5, 4).setConstant(kp_legs); 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kp ankles", [this]() { return kp_vector; },
+    mc_rtc::gui::NumberInput("kp ankles", [this]() { return kp_ankles; },
       [this](double v) { 
-        kp_vector(4) = v; 
-        kp_vector(9) = v; 
+        kp_ankles = v;
+        kp_vector(4) = kp_ankles; 
+        kp_vector(9) = kp_ankles; 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kp torso", [this]() { return kp_vector; },
+    mc_rtc::gui::NumberInput("kp torso", [this]() { return kp_torso; },
       [this](double v) { 
-        kp_vector(10) = v; 
+        kp_torso = v;
+        kp_vector(10) = kp_torso; 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kp arms", [this]() { return kp_vector; },
+    mc_rtc::gui::NumberInput("kp arms", [this]() { return kp_arms; },
       [this](double v) { 
-        kp_vector.segment(11, 4).setConstant(v); 
-        kp_vector.segment(15, 4).setConstant(v); 
+        kp_arms = v;
+        kp_vector.segment(11, 4).setConstant(kp_arms); 
+        kp_vector.segment(15, 4).setConstant(kp_arms); 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kd legs", [this]() { return kd_vector; },
+    mc_rtc::gui::NumberInput("kd legs", [this]() { return kd_legs; },
       [this](double v) { 
-        kd_vector.segment(0, 4).setConstant(v); 
-        kd_vector.segment(5, 4).setConstant(v); 
+        kd_legs = v;
+        kd_vector.segment(0, 4).setConstant(kd_legs); 
+        kd_vector.segment(5, 4).setConstant(kd_legs); 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kd ankles", [this]() { return kd_vector; },
+    mc_rtc::gui::NumberInput("kd ankles", [this]() { return kd_ankles; },
       [this](double v) { 
-        kd_vector(4) = v; 
-        kd_vector(9) = v; 
+        kd_ankles = v;
+        kd_vector(4) = kd_ankles; 
+        kd_vector(9) = kd_ankles; 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kd torso", [this]() { return kd_vector; },
+    mc_rtc::gui::NumberInput("kd torso", [this]() { return kd_torso; },
       [this](double v) { 
-        kd_vector(10) = v; 
+        kd_torso = v;
+        kd_vector(10) = kd_torso; 
       })
   );
 
   gui()->addElement({"SandBoxHumanoidController", "Gains"},
-    mc_rtc::gui::NumberInput("kd arms", [this]() { return kd_vector; },
+    mc_rtc::gui::NumberInput("kd arms", [this]() { return kd_arms; },
       [this](double v) { 
-        kd_vector.segment(11, 4).setConstant(v); 
-        kd_vector.segment(15, 4).setConstant(v); 
+        kd_arms = v;
+        kd_vector.segment(11, 4).setConstant(kd_arms); 
+        kd_vector.segment(15, 4).setConstant(kd_arms); 
       })
   );
 }
