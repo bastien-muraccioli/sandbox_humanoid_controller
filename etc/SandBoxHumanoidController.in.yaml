@@ -21,33 +21,37 @@ robots:
   ground:
     module: env/ground
 
-# Collision constraint
+ObserverPipelines:
+  name: "ObserverPipeline"
+  gui: true
+  log: true
+  observers:
+    - type: Encoder
+      velocity: encoderFiniteDifferences
+    # - type: Attitude
+    #   required: true
+    #   update: true
+    # - type: KinematicInertial
+    #   update: true
+    #   config:
+    #     cutoff: 0.02
+    #     anchorFrame:
+    #       maxAnchorFrameDiscontinuity: 0.02
+    - type: BodySensor
+      update: true
+      bodySensor: FloatingBase
+
+# constraints:
+#   - type: collision
+  # - type: contact
+  # - type: dynamics
+  #   damper: [0.1, 0.01, 0.5]
+  # - type: compoundJoint
+
 collisions:
 - type: collision
   useMinimal: true
-
-ObserverPipelines:
-  name: MainPipeline
-  gui: true
-  log: true
-
-  observers:
-    - type: Encoder
-      config:
-          velocity: encoderVelocities
-
-    - type: Tilt
-      required: true
-      update: true
-      config:
-        anchorFrameFunction: anchorFrameFunction
-        filterGains:
-          initAlpha: 2 # 5 # 0.0
-          initBeta: 2 # 1 # 0.0 # 0.00001
-          initGamma: 1 # 2 # 0.0
-          finalAlpha: 2 # 5 # 0.0
-          finalBeta: 2 # 1 # 0.0 # 0.00001
-          finalGamma: 1 # 2 # 0.0
+  # useCommon: true
 
 # Implement some additional text states
 states: {}
@@ -57,45 +61,355 @@ transitions:
 # Initial state
 init: SandBoxHumanoidController_Initial
 
-gainsPercentage: 1.0
+h1:
+  kp:
+    left_hip_yaw_joint: 750.0
+    left_hip_roll_joint: 750.0
+    left_hip_pitch_joint: 750.0
+    left_knee_joint: 750.0
+    left_ankle_joint: 500.0
+    right_hip_yaw_joint: 750.0
+    right_hip_roll_joint: 750.0
+    right_hip_pitch_joint: 750.0
+    right_knee_joint: 750.0
+    right_ankle_joint: 500.0
+    torso_joint: 100.0
+    left_shoulder_pitch_joint: 100.0
+    left_shoulder_roll_joint: 75.0
+    left_shoulder_yaw_joint: 75.0
+    left_elbow_joint: 100.0
+    right_shoulder_pitch_joint: 100.0
+    right_shoulder_roll_joint: 75.0
+    right_shoulder_yaw_joint: 75.0
+    right_elbow_joint: 100.0
+  kd:
+    left_hip_yaw_joint: 55.0
+    left_hip_roll_joint: 55.0
+    left_hip_pitch_joint: 55.0
+    left_knee_joint: 55.0
+    left_ankle_joint: 45.0
+    right_hip_yaw_joint: 55.0
+    right_hip_roll_joint: 55.0
+    right_hip_pitch_joint: 55.0
+    right_knee_joint: 55.0
+    right_ankle_joint: 45.0
+    torso_joint: 20.0
+    left_shoulder_pitch_joint: 20.0
+    left_shoulder_roll_joint: 20.0
+    left_shoulder_yaw_joint: 20.0
+    left_elbow_joint: 20.0
+    right_shoulder_pitch_joint: 20.0
+    right_shoulder_roll_joint: 20.0
+    right_shoulder_yaw_joint: 20.0
+    right_elbow_joint: 20.0
 
-kp:
-  left_hip_yaw_joint: 750.0
-  left_hip_roll_joint: 750.0
-  left_hip_pitch_joint: 750.0
-  left_knee_joint: 750.0
-  left_ankle_joint: 500.0
-  right_hip_yaw_joint: 750.0
-  right_hip_roll_joint: 750.0
-  right_hip_pitch_joint: 750.0
-  right_knee_joint: 750.0
-  right_ankle_joint: 500.0
-  torso_joint: 100.0
-  left_shoulder_pitch_joint: 100.0
-  left_shoulder_roll_joint: 75.0
-  left_shoulder_yaw_joint: 75.0
-  left_elbow_joint: 100.0
-  right_shoulder_pitch_joint: 100.0
-  right_shoulder_roll_joint: 75.0
-  right_shoulder_yaw_joint: 75.0
-  right_elbow_joint: 100.0
-kd:
-  left_hip_yaw_joint: 55.0
-  left_hip_roll_joint: 55.0
-  left_hip_pitch_joint: 55.0
-  left_knee_joint: 55.0
-  left_ankle_joint: 45.0
-  right_hip_yaw_joint: 55.0
-  right_hip_roll_joint: 55.0
-  right_hip_pitch_joint: 55.0
-  right_knee_joint: 55.0
-  right_ankle_joint: 45.0
-  torso_joint: 20.0
-  left_shoulder_pitch_joint: 20.0
-  left_shoulder_roll_joint: 20.0
-  left_shoulder_yaw_joint: 20.0
-  left_elbow_joint: 20.0
-  right_shoulder_pitch_joint: 20.0
-  right_shoulder_roll_joint: 20.0
-  right_shoulder_yaw_joint: 20.0
-  right_elbow_joint: 20.0
+jvrc1:
+  kp:
+    R_HIP_P: 5000
+    R_HIP_R: 5000
+    R_HIP_Y: 5000
+    R_KNEE: 6000
+    R_ANKLE_R: 3000
+    R_ANKLE_P: 3000
+
+    L_HIP_P: 5000
+    L_HIP_R: 5000
+    L_HIP_Y: 5000
+    L_KNEE: 6000
+    L_ANKLE_R: 3000
+    L_ANKLE_P: 3000
+
+    WAIST_Y: 5000
+    WAIST_P: 5000
+    WAIST_R: 5000
+
+    NECK_Y: 1000
+    NECK_R: 1000
+    NECK_P: 1000
+
+    R_SHOULDER_P: 1100
+    R_SHOULDER_R: 1100
+    R_SHOULDER_Y: 1100
+    R_ELBOW_P: 1200
+    R_ELBOW_Y: 1200
+    R_WRIST_R: 500
+    R_WRIST_Y: 500
+    R_UTHUMB: 501
+    R_LTHUMB: 501
+    R_UINDEX: 501
+    R_LINDEX: 501
+    R_ULITTLE: 501
+    R_LLITTLE: 501
+
+    L_SHOULDER_P: 1100
+    L_SHOULDER_R: 1100
+    L_SHOULDER_Y: 1100
+    L_ELBOW_P: 1200
+    L_ELBOW_Y: 1200
+    L_WRIST_R: 500
+    L_WRIST_Y: 500
+    L_UTHUMB: 501
+    L_LTHUMB: 501
+    L_UINDEX: 501
+    L_LINDEX: 501
+    L_ULITTLE: 501
+    L_LLITTLE: 501
+
+  kd:
+    R_HIP_P: 30
+    R_HIP_R: 30
+    R_HIP_Y: 30
+    R_KNEE: 50
+    R_ANKLE_R: 20
+    R_ANKLE_P: 20
+
+    L_HIP_P: 30
+    L_HIP_R: 30
+    L_HIP_Y: 30
+    L_KNEE: 50
+    L_ANKLE_R: 20
+    L_ANKLE_P: 20
+
+    WAIST_Y: 32
+    WAIST_P: 32
+    WAIST_R: 32
+
+    NECK_Y: 21
+    NECK_R: 21
+    NECK_P: 21
+
+    R_SHOULDER_P: 70
+    R_SHOULDER_R: 70
+    R_SHOULDER_Y: 70
+    R_ELBOW_P: 80
+    R_ELBOW_Y: 80
+    R_WRIST_R: 24
+    R_WRIST_Y: 24
+    R_UTHUMB: 25
+    R_LTHUMB: 25
+    R_UINDEX: 25
+    R_LINDEX: 25
+    R_ULITTLE: 25
+    R_LLITTLE: 25
+
+    L_SHOULDER_P: 70
+    L_SHOULDER_R: 70
+    L_SHOULDER_Y: 70
+    L_ELBOW_P: 80
+    L_ELBOW_Y: 80
+    L_WRIST_R: 24
+    L_WRIST_Y: 24
+    L_UTHUMB: 25
+    L_LTHUMB: 25
+    L_UINDEX: 25
+    L_LINDEX: 25
+    L_ULITTLE: 25
+    L_LLITTLE: 25
+
+hrp5_p:
+  kp:
+    RCY: 5400
+    RCR: 12925
+    RCP: 16000
+    RKP: 36000
+    RAP: 8000
+    RAR: 2244
+
+    LCY: 5400
+    LCR: 12925
+    LCP: 16000
+    LKP: 36000
+    LAP: 8000
+    LAR: 2244
+
+    WP: 8000
+    WR: 8000
+    WY: 8000
+
+    HY: 1311
+    HP: 1311
+
+    RSC: 3235
+    RSP: 3235
+    RSR: 5586
+    RSY: 1429
+    REP: 8705
+    RWRY: 1386
+    RWRR: 1386
+    RWRP: 1492
+    RHDY: 693
+
+    RTMP: 693
+    RTPIP: 693
+    RTDIP: 693
+
+    RIMP: 693
+    RIPIP: 693
+    RIDIP: 693
+
+    RMMP: 693
+    RMPIP: 693
+    RMDIP: 693
+
+    LSC: 3235
+    LSP: 3235
+    LSR: 5586
+    LSY: 1429
+    LEP: 8705
+    LWRY: 1386
+    LWRR: 1386
+    LWRP: 1492
+    LHDY: 693
+
+    LTMP: 693
+    LTPIP: 693
+    LTDIP: 693
+
+    LIMP: 693
+    LIPIP: 693
+    LIDIP: 693
+
+    LMMP: 693
+    LMPIP: 693
+    LMDIP: 693
+
+  kd:
+    RCY: 54
+    RCR: 103.40
+    RCP: 160.00
+    RKP: 360.00
+    RAP: 80.00
+    RAR: 22.44
+
+    LCY: 54
+    LCR: 103.40
+    LCP: 160.00
+    LKP: 360.00
+    LAP: 80.00
+    LAR: 22.44
+
+    WP: 80.00
+    WR: 80.00
+    WY: 80.00
+
+    HY: 13.11
+    HP: 13.11
+
+    RSC: 32.35
+    RSP: 32.35
+    RSR: 55.86
+    RSY: 10.83
+    REP: 87.05
+    RWRY: 13.87
+    RWRR: 13.87
+    RWRP: 11.19
+    RHDY: 6.93
+
+    RTMP: 6.93
+    RTPIP: 6.93
+    RTDIP: 6.93
+
+    RIMP: 6.93
+    RIPIP: 6.93
+    RIDIP: 6.93
+
+    RMMP: 6.93
+    RMPIP: 6.93
+    RMDIP: 6.93
+
+    LSC: 32.35
+    LSP: 32.35
+    LSR: 55.86
+    LSY: 10.83
+    LEP: 87.05
+    LWRY: 13.87
+    LWRR: 13.87
+    LWRP: 11.19
+    LHDY: 6.93
+
+    LTMP: 6.93
+    LTPIP: 6.93
+    LTDIP: 6.93
+
+    LIMP: 6.93
+    LIPIP: 6.93
+    LIDIP: 6.93
+
+    LMMP: 6.93
+    LMPIP: 6.93
+    LMDIP: 6.93
+
+rhps1:
+  kp:
+    L_CROTCH_Y: 20000
+    L_CROTCH_R: 20000
+    L_CROTCH_P: 20000
+    L_KNEE_P: 20000
+    L_ANKLE_R: 10000
+    L_ANKLE_P: 10000
+
+    CHEST_Y: 44000
+    CHEST_P: 44000
+
+    R_CROTCH_Y: 20000
+    R_CROTCH_R: 20000
+    R_CROTCH_P: 20000
+    R_KNEE_P: 20000
+    R_ANKLE_R: 10000
+    R_ANKLE_P: 10000
+
+    HEAD_Y: 2000
+    HEAD_P: 2000
+
+    L_SHOULDER_P: 15000
+    L_SHOULDER_R: 14000
+    L_SHOULDER_Y: 14000
+    L_ELBOW_P: 14000
+    L_ELBOW_Y: 14000
+    L_WRIST_R: 14000
+    L_WRIST_Y: 14000
+
+    R_SHOULDER_P: 500
+    R_SHOULDER_R: 15000
+    R_SHOULDER_Y: 14000
+    R_ELBOW_P: 14000
+    R_ELBOW_Y: 14000
+    R_WRIST_R: 14000
+    R_WRIST_Y: 14000
+
+  kd:
+    L_CROTCH_Y: 400
+    L_CROTCH_R: 400
+    L_CROTCH_P: 400
+    L_KNEE_P: 400
+    L_ANKLE_R: 300
+    L_ANKLE_P: 300
+
+    CHEST_Y: 440
+    CHEST_P: 440
+
+    R_CROTCH_Y: 400
+    R_CROTCH_R: 400
+    R_CROTCH_P: 400
+    R_KNEE_P: 400
+    R_ANKLE_R: 300
+    R_ANKLE_P: 300
+
+    HEAD_Y: 50
+    HEAD_P: 50
+
+    L_SHOULDER_P: 240
+    L_SHOULDER_R: 240
+    L_SHOULDER_Y: 240
+    L_ELBOW_P: 240
+    L_ELBOW_Y: 240
+    L_WRIST_R: 240
+    L_WRIST_Y: 240
+
+    R_SHOULDER_P: 5
+    R_SHOULDER_R: 240
+    R_SHOULDER_Y: 240
+    R_ELBOW_P: 240
+    R_ELBOW_Y: 240
+    R_WRIST_R: 240
+    R_WRIST_Y: 240
