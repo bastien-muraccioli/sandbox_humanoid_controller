@@ -27,6 +27,7 @@ ObserverPipelines:
   log: true
   observers:
     - type: Encoder
+      velocity: encoderVelocities
       velocity: encoderFiniteDifferences
     # - type: Attitude
     #   required: true
@@ -41,23 +42,25 @@ ObserverPipelines:
       update: true
       bodySensor: FloatingBase
 
-# constraints:
-#   - type: collision
-  # - type: contact
-  # - type: dynamics
-  #   damper: [0.1, 0.01, 0.5]
-  # - type: compoundJoint
+constraints:
+  - type: contact
+    contactType: acceleration
+  - type: compoundJoint
 
 collisions:
 - type: collision
   useMinimal: true
-  # useCommon: true
 
 # Implement some additional text states
 states: {}
 # Transitions map
 transitions:
 - [SandBoxHumanoidController_Initial, OK, SandBoxHumanoidController_Initial, Strict]
+- [SandBoxHumanoidController_Initial, Torque, SandBoxHumanoidController_Torque, Strict]
+- [SandBoxHumanoidController_Torque, OK, SandBoxHumanoidController_Initial, Strict]
+- [SandBoxHumanoidController_Initial, TorquePos, SandBoxHumanoidController_TorquePos, Strict]
+- [SandBoxHumanoidController_TorquePos, OK, SandBoxHumanoidController_Initial, Strict]
+
 # Initial state
 init: SandBoxHumanoidController_Initial
 

@@ -1,3 +1,4 @@
 add_fsm_state_simple(SandBoxHumanoidController_Initial)
-
+add_fsm_state_simple(SandBoxHumanoidController_Torque)
+add_fsm_state_simple(SandBoxHumanoidController_TorquePos)
 add_fsm_data_directory(data)

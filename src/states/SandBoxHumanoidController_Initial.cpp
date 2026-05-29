@@ -7,6 +7,8 @@ void SandBoxHumanoidController_Initial::configure(const mc_rtc::Configuration & 
 void SandBoxHumanoidController_Initial::start(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
+  ctl.solver().addTask(ctl.postureTask);
+  ctl.activateTorqueControl(false);
 }
 
 bool SandBoxHumanoidController_Initial::run(mc_control::fsm::Controller & ctl_)
@@ -18,6 +20,7 @@ bool SandBoxHumanoidController_Initial::run(mc_control::fsm::Controller & ctl_)
 void SandBoxHumanoidController_Initial::teardown(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<SandBoxHumanoidController &>(ctl_);
+  ctl.solver().removeTask(ctl.postureTask);
 }
 
 EXPORT_SINGLE_STATE("SandBoxHumanoidController_Initial", SandBoxHumanoidController_Initial)
